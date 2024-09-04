@@ -21,4 +21,7 @@ public:
 	// Í¨¹ý IEnemyInterface ¼Ì³Ð
 	void HighlightActor() override;
 	void UnHighlightActor() override;
+
+protected:
+	virtual void BeginPlay() override;
 };
