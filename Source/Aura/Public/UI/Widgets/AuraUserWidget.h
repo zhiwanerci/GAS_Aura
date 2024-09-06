@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/AuraWidgetController.h"
+#include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraUserWidget.generated.h"
 
 /**
