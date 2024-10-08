@@ -3,6 +3,7 @@ DerivedDataCache
 Intermediate
 Saved
 Build
+enc_temp_folder
 
 .vscode
 .vs
