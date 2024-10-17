@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class AURA_API UAuraInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
