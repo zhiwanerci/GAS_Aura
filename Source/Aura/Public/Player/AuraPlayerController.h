@@ -48,6 +48,8 @@ private:
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
 
+	FHitResult CursorHit;
+
 #pragma endregion
 
 	void AbilityInputTagPressed(FGameplayTag InputTag);
