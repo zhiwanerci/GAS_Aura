@@ -40,6 +40,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
+	void ShiftPressed(const FInputActionValue& InputActionValue) { bShiftKeyDown = true; };
+	void ShiftReleased(const FInputActionValue& InputActionValue) { bShiftKeyDown = false; };
+	bool bShiftKeyDown = false;
+
 	void Move(const FInputActionValue& InputActionValue);
 
 #pragma region HighLight actor
