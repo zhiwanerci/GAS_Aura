@@ -29,7 +29,7 @@ public:
 	AAuraPlayerController();
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter);
+	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
 
 protected:
 	virtual void BeginPlay() override;
