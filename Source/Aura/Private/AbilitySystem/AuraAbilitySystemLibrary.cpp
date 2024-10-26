@@ -83,5 +83,3 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 
 	return AuraGameMode->CharacterClassInfo;
 }
-
-
