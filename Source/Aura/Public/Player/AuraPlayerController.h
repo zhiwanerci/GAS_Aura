@@ -51,6 +51,7 @@ private:
 	void ShiftReleased(const FInputActionValue& InputActionValue) { bShiftKeyDown = false; };
 	bool bShiftKeyDown = false;
 
+	bool bIsMoving = false;
 	void Move(const FInputActionValue& InputActionValue);
 
 #pragma region HighLight actor

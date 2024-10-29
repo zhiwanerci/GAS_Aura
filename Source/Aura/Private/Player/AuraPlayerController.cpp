@@ -13,6 +13,7 @@
 #include "NavigationPath.h"
 #include "GameFramework/Character.h"
 #include "UI/Widgets/DamageTextComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -65,6 +66,11 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 void AAuraPlayerController::AutoRun()
 {
+	if (bAutoRunning && bIsMoving)
+	{
+		bAutoRunning = false;
+	}
+
 	if (!bAutoRunning) return;
 
 	if (APawn* ControlledPawn = GetPawn())
@@ -87,6 +93,7 @@ void AAuraPlayerController::SetupInputComponent()
 
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AAuraPlayerController::Move);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased);
 
@@ -101,6 +108,8 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	bIsMoving = InputAxisVector.Size() > 0.f;
 
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
@@ -144,17 +153,20 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		if (FollowTime <= ShortPressThreshold)
 		{
 			APawn* ControlledPawn = GetPawn();
-			if (UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			if (!bIsMoving)
 			{
-				Spline->ClearSplinePoints();
-				for (const FVector& PointLoc : NavigationPath->PathPoints)
+				if (UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 				{
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					// DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Red, false, 6.f);
-				}
+					Spline->ClearSplinePoints();
+					for (const FVector& PointLoc : NavigationPath->PathPoints)
+					{
+						Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+						// DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Red, false, 6.f);
+					}
 
-				CachedDestination = NavigationPath->PathPoints[NavigationPath->PathPoints.Num() - 1];
-				bAutoRunning = true;
+					CachedDestination = NavigationPath->PathPoints[NavigationPath->PathPoints.Num() - 1];
+					bAutoRunning = true;
+				}
 			}
 		}
 
@@ -180,12 +192,15 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
-		if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
-
 		if (APawn* ControlledPawn = GetPawn())
 		{
-			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-			ControlledPawn->AddMovementInput(WorldDirection);
+			if (!bIsMoving)
+			{
+				if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
+
+				const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+				ControlledPawn->AddMovementInput(WorldDirection);
+			}
 		}
 	}
 }
