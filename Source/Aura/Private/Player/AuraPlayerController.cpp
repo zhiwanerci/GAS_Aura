@@ -164,8 +164,11 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 						// DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Red, false, 6.f);
 					}
 
-					CachedDestination = NavigationPath->PathPoints[NavigationPath->PathPoints.Num() - 1];
-					bAutoRunning = true;
+					if (NavigationPath->PathPoints.Num() > 0)
+					{
+						CachedDestination = NavigationPath->PathPoints[NavigationPath->PathPoints.Num() - 1];
+						bAutoRunning = true;
+					}
 				}
 			}
 		}
